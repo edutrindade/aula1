@@ -1,6 +1,55 @@
-import { StyleSheet, Text, View, TextInput, ImageBackground, TouchableOpacity } from 'react-native';
+import { useState } from 'react';
+import { StyleSheet, Text, View, TextInput, ImageBackground, TouchableOpacity, Alert, KeyboardAvoidingView } from 'react-native';
 
 export default function SignIn() {
+    const [step, setStep] = useState(0);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [name, setName] = useState('');
+    const [repeatPassword, setRepeatPassword] = useState('');
+
+    function changeForm() {
+        if (step === 0) {
+            setStep(1);
+        } else {
+            setStep(0);
+        }
+    }
+
+    function handleSubmit() {
+        console.log('Dados enviados');
+        console.log({ email, password });
+    }
+
+    function validateForm() {
+        if (name === '') {
+            Alert.alert('Preencha o campo nome');
+            return;
+        }
+
+        if (email === '') {
+            Alert.alert('Preencha o campo e-mail');
+            return;
+        }
+
+        if (password === '') {
+            Alert.alert('Preencha o campo senha');
+            return;
+        }
+
+        if (repeatPassword === '') {
+            Alert.alert('Preencha o campo repetir senha');
+            return;
+        }
+
+        if (password !== repeatPassword) {
+            Alert.alert('As senhas não conferem');
+            return;
+        }
+
+        handleSubmit();
+    }
+
     return (
         <ImageBackground
             style={styles.container}
@@ -10,31 +59,89 @@ export default function SignIn() {
             }}
             resizeMode="stretch"
         >
-            <Text style={styles.title}>Bem-vindo</Text>
+            <Text style={styles.title}>{step === 0 ? 'Bem-vindo' : 'Cadastre-se'}</Text>
 
-            <View style={styles.form}>
-                <Text style={styles.label}>E-mail</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Seu melhor e-mail"
-                    keyboardType='email-address'
-                />
+            {/* Formulários de Login e Cadastro */}
+            {step === 0 ? (
+                <KeyboardAvoidingView style={styles.form} behavior="padding">
+                    <Text style={styles.label}>E-mail</Text>
+                    <TextInput
+                        style={[styles.input, { textTransform: 'lowercase' }]}
+                        placeholder="Seu melhor e-mail"
+                        keyboardType='email-address'
+                        secureTextEntry={false}
+                        value={email}
+                        onChangeText={setEmail}
+                    />
 
-                <Text style={styles.label}>Senha</Text>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Sua senha secreta"
-                    textSecurityEntry={true}
-                />
+                    <Text style={styles.label}>Senha</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Sua senha secreta"
+                        value={password}
+                        onChangeText={setPassword}
+                        secureTextEntry
+                    />
 
-                <TouchableOpacity style={styles.button}>
-                    <Text style={styles.buttonText}>Entrar</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                        <Text style={styles.buttonText}>Entrar</Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity>
-                    <Text style={[styles.label, { textAlign: 'center' }]}>Cadastre-se grátis!</Text>
-                </TouchableOpacity>
-            </View>
+                    <TouchableOpacity onPress={changeForm}>
+                        <Text style={[styles.label, { textAlign: 'center' }]}>Cadastre-se grátis!</Text>
+                    </TouchableOpacity>
+                </KeyboardAvoidingView>
+
+            ) : (
+                <KeyboardAvoidingView style={styles.form} behavior="padding">
+                    <Text style={styles.label}>Nome</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Seu nome completo"
+                        secureTextEntry={false}
+                        value={name}
+                        onChangeText={setName}
+                    />
+
+                    <Text style={styles.label}>E-mail</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Seu melhor e-mail"
+                        keyboardType='email-address'
+                        secureTextEntry={false}
+                        value={email}
+                        onChangeText={setEmail}
+                    />
+
+                    <Text style={styles.label}>Senha</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Sua senha secreta"
+                        secureTextEntry
+                        autoCorrect={false}
+                        value={password}
+                        onChangeText={setPassword}
+                    />
+
+                    <Text style={styles.label}>Repita sua Senha</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Repita sua senha"
+                        secureTextEntry
+                        autoCorrect={false}
+                        value={repeatPassword}
+                        onChangeText={setRepeatPassword}
+                    />
+
+                    <TouchableOpacity style={styles.button} onPress={validateForm}>
+                        <Text style={styles.buttonText}>Cadastrar</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={changeForm}>
+                        <Text style={[styles.label, { textAlign: 'center' }]}>Já possuo conta</Text>
+                    </TouchableOpacity>
+                </KeyboardAvoidingView>
+            )}
         </ImageBackground>
     );
 }
